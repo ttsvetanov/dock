@@ -1,13 +1,15 @@
 ﻿#include <cstdio>
 #include <cstdint>
+#include <windows.h>
 
 #include "assert.hpp"
 
 int32_t main() {
 	try {
-		foreman::Assert::test([]() -> bool { return false; });
+		foreman::Assert::isEquals<const char*>(u8"some", u8"some");
+		printf(u8"\tTest passed!\n");
 	} catch (foreman::AssertException& e) {
-		printf("Assert failed!\n");
+		printf(u8"\tMessage: %s\n", e.what());
 	}
 	
 	fflush(stdin);
