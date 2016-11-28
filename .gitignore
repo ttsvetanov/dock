@@ -27,3 +27,21 @@
 *.exe
 *.out
 *.app
+
+# Visual studio
+*.vcxproj.user
+*.sdf
+*.tlog
+*.log
+*.pdb
+*.ilk
+*.idb
+*.VC.opendb
+*.pbi
+*.o
+*.pbi.cout
+x64
+Debug
+Release
+.vs
+*.db
