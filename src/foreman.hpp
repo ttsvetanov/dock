@@ -42,10 +42,17 @@ namespace foreman {
 	void Test(const char* testName, std::function<void()> testFunction) {
 		try {
 			testFunction();
-			std::cout << termcolor::green << u8"    \u2713" << termcolor::white << " \"" << testName <<  u8"\": passed!\n";
+            std::cout << termcolor::green << u8"    \u2713"
+                << termcolor::white << " \"" << testName << "\": "
+                << termcolor::green << u8"passed!\n"
+                << termcolor::white;
+            std::flush(std::cout);
 		} catch (Assert::Exception& e) {
-			std::cout << termcolor::red << u8"    x" << termcolor::white << " \"" << testName << u8"\": fail!\n";
-			std::cout << u8"    Result: \"" << e.what() << u8"\"\n";
+			std::cout << termcolor::red << u8"    x" 
+                << termcolor::white << " \"" << testName << "\": "
+                << termcolor::red << u8"fail!\n"
+			    << termcolor::white << u8"    Result: \"" << e.what() << u8"\"\n"   
+                << termcolor::reset;
 			std::flush(std::cout);
 		}
 	}
