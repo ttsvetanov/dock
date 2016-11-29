@@ -2,7 +2,9 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <cstring>
 
+#include <string>
 #include <functional>
 #include <exception>
 
@@ -13,7 +15,11 @@ namespace foreman {
 		// General assert exception without specialized message 
 		class Exception : public std::exception {
 		public:
-			Exception() : exception("Assert failed!") {}
+			Exception() : exception() {}
+
+            virtual const char* what() const noexcept override {
+                return u8"Assert failed";
+            }
 		};
 
 		// API
