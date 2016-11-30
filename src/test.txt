@@ -1,4 +1,0 @@
-  Some module
-    вњ“ Some test 1: пройден!
-    вњ“ Some test 2: пройден!
-    x Some test 3: провален!
