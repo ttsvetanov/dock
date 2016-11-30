@@ -8,52 +8,81 @@
 #include <tuple>
 
 #include "assert.hpp"
-#include "../third_party/termcolor.hpp"
+#include "format.hpp"
 
 namespace foreman {
 	class Core {
 	public:
-		static Core& getInstance() {
+		static constexpr Core& getInstance() {
 			return Core::instance;
 		}
 
-        void collect() {}
+        void addModule(const char* moduleName, std::function<void()> moduleFunction);
+
+        void run();
 	private:
+        static const size_t resizeStep = 100;
         static Core instance;
 
-		Core();
+        Core() = default;
+
+        std::vector<std::tuple<const char*, std::function<void()>>> modules;
 	};
+
+    class ModuleInternal {
+    public:
+        ModuleInternal(const char* name, std::function<void()> function);
+    };
+
+    void Test(const char* name, std::function<void()> function);
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     Core Core::instance;
 
-	Core::Core() {
-        #if defined(_WIN32) || defined(_WIN64)
-		system("chcp 65001");
-        #endif
-	}
+    // ----------------------------------------------------------------------------------------------------------------
 
-	// ----------------------------------------------------------------------------------------------------------------
+    void Core::addModule(const char* moduleName, std::function<void()> moduleFunction) {
+        try {
+            if (this->modules.capacity() == this->modules.size()) {
+                this->modules.reserve(this->modules.capacity() + Core::resizeStep);
+            }
+        } catch (...) {
+            Format::printAllocateError(moduleName);
+            return;
+        }
 
-	static void Module(const char* moduleName, std::function<void()> moduleFunction) {
-		std::cout << u8"  " << moduleName << u8"\n";
-		moduleFunction();
-	}
+        this->modules.push_back(std::tuple<const char*, std::function<void()>>(moduleName, moduleFunction));
+    }
 
-	void Test(const char* testName, std::function<void()> testFunction) {
+    void Core::run() {
+        for (auto iter = this->modules.begin(); iter != this->modules.end(); ++iter) {
+            Format::printModuleName(std::get<0>(*iter));
+            std::get<1>(*iter)();
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    ModuleInternal::ModuleInternal(const char* name, std::function<void()> function) {
+        Core::getInstance().addModule(name, function);
+    }
+
+    #define FOREMAN_CONCAT_(x,y)        x##y
+    #define FOREMAN_CONCAT(x,y)         FOREMAN_CONCAT_(x,y)
+    #define GENERATE_MODULE(number)     FOREMAN_CONCAT(static foreman::ModuleInternal internalModule, __COUNTER__)
+    #define Module(name, function)      GENERATE_MODULE(__COUNTER__)(name, function)
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+	void Test(const char* name, std::function<void()> function) {
 		try {
-			testFunction();
-            std::cout << termcolor::green << u8"    \u2713"
-                << termcolor::white << " \"" << testName << "\": "
-                << termcolor::green << u8"passed!\n"
-                << termcolor::white;
-            std::flush(std::cout);
+			function();
+            Format::printPassedTest(name);
 		} catch (Assert::Exception& e) {
-			std::cout << termcolor::red << u8"    x" 
-                << termcolor::white << " \"" << testName << "\": "
-                << termcolor::red << u8"fail!\n"
-			    << termcolor::white << u8"    Result: \"" << e.what() << u8"\"\n"   
-                << termcolor::reset;
-			std::flush(std::cout);
+            (void) e;
+            Format::printFailedTest(name);
 		}
 	}
 }
