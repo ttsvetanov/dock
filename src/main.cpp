@@ -5,7 +5,7 @@
 
 using namespace foreman;
 
-Module(u8"Some module 1", []() {
+Module(u8"Some module 1", {
     Test(u8"Some test 1", []() {
         Assert::isTrue([]() -> bool { return true; });
     });
@@ -19,25 +19,22 @@ Module(u8"Some module 1", []() {
     });
 });
 
-Module(u8"Some module 2", []() {
-    Test(u8"Some test 4", []() {
+Module(u8"Some module 2", {
+    Test(u8"Some test 1", []() {
         Assert::isTrue([]() -> bool { return true; });
     });
 
-    Test(u8"Some test 5", []() {
+    Test(u8"Some test 2", []() {
         Assert::isTrue([]() -> bool { return true; });
     });
 
-    Test(u8"Some test 6", []() {
+    Test(u8"Some test 3", []() {
         Assert::isTrue([]() -> bool { return false; });
     });
 });
 
 int32_t main() {
     Core::getInstance().run();
-
-    fflush(stdin);
-    getchar();
 
 	return 0;
 }

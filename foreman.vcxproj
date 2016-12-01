@@ -114,8 +114,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\assert.hpp" />
+    <ClInclude Include="src\core.hpp" />
     <ClInclude Include="src\foreman.hpp" />
     <ClInclude Include="src\format.hpp" />
+    <ClInclude Include="src\result.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
