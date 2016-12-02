@@ -106,6 +106,8 @@ namespace foreman {
     void Core::putResultsIntoJson(nlohmann::json& jsonObject) {
         JsonResultSerializer serializer(jsonObject);
         serializer.serialize(this->results);
+        jsonObject[u8"testsPassed"] = this->passedTestsCount;
+        jsonObject[u8"testsCount"] = this->allTestsCount;
     }
 
     // ----------------------------------------------------------------------------------------------------------------
