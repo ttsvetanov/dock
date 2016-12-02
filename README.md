@@ -2,7 +2,7 @@
 
 ## Description
 
-Simple, header-only, modern C++ unit-testing library. Librabry puts simple result data into `stdout` in UTF-8 encoding and may generate JSON result.
+Simple, header-only, modern C++ unit-testing library. It puts result data into `stdout` in UTF-8 encoding and also can generate JSON results.
 
 ## Build instructions
 
