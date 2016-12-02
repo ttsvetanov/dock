@@ -35,7 +35,7 @@ namespace foreman {
         static void isLess(const T a, const T b, std::function<bool(const T, const T)> compareFcn = defaultLessFunction<T>);
     private:
         // Methods
-        Assert() {}
+        Assert() = default;
 
         template<typename T>
         static void generalAssertMethod(const T a, const T b, std::function<bool(const T, const T)> compareFcn);
@@ -73,8 +73,6 @@ namespace foreman {
             throw Assert::Exception();
         }
     }
-
-    // -------------------------------------------------------------------------------------------------------------------
 
     template<typename T>
     void Assert::isEquals(const T a, const T b, std::function<bool(const T, const T)> compareFcn) {

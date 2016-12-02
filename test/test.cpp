@@ -26,7 +26,16 @@ Module(u8"Some module 2", {
 });
 
 int32_t main() {
+    nlohmann::json outJson;
+    outJson[u8"version"] = u8"0.2.0";
+    outJson[u8"date"] = __DATE__;
+    outJson[u8"app"] = u8"foreman-test";
+
     Core::getInstance().run();
+    Core::getInstance().putResultsIntoJson(outJson);
+
+    std::cout << std::endl;
+    std::cout << outJson.dump(2);
 
     return 0;
 }

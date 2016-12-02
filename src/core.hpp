@@ -6,7 +6,6 @@
 #include <functional>
 #include <vector>
 #include <map>
-#include <tuple>
 
 #include "assert.hpp"
 #include "format.hpp"
@@ -30,7 +29,7 @@ namespace foreman {
                 { return this->tests.size(); }
 
             void        addTest(const char* name, std::function<void()> func);
-            void        runTests();
+            void        runTests(std::vector<Result>& resultsContainer);
         private:
             size_t      passedTestsCount;
             const char* moduleName;
@@ -48,13 +47,15 @@ namespace foreman {
         void addModule(_internal::Module* module);
 
         void run();
+        void putResultsIntoJson(nlohmann::json& jsonObject);
     private:
         static const size_t resizeStep = 100;
         static Core instance;
 
-        Core() = default;
+        Core();
 
         std::vector<_internal::Module*> modules;
+        std::vector<Result> results;
 
         size_t  passedTestsCount;
         size_t  allTestsCount;
@@ -66,6 +67,9 @@ namespace foreman {
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    Core::Core()
+        : passedTestsCount(0), allTestsCount(0) { }
+
     void Core::addModule(_internal::Module* module) {
         if (module == nullptr) {
             return;
@@ -76,6 +80,7 @@ namespace foreman {
                 this->modules.reserve(this->modules.capacity() + Core::resizeStep);
             }
             this->modules.push_back(module);
+            this->allTestsCount += module->getTestsCount();
         } catch (...) {
             Format::printAllocateError(module->getName());
             return;
@@ -84,37 +89,56 @@ namespace foreman {
 
     void Core::run() {
         this->passedTestsCount = 0;
-        this->allTestsCount = 0;
+
+        this->results.clear();
+        this->results.reserve(this->allTestsCount);
+
         for (auto iter = this->modules.begin(); iter != this->modules.end(); ++iter) {
             if (*iter) {
                 Format::printModuleName((*iter)->getName());
-                (*iter)->runTests();
+                (*iter)->runTests(this->results);
                 this->passedTestsCount += (*iter)->getPassedTestsCount();
-                this->allTestsCount += (*iter)->getTestsCount();
             }
         }
         Format::printStatistics(this->passedTestsCount, this->allTestsCount);
     }
 
+    void Core::putResultsIntoJson(nlohmann::json& jsonObject) {
+        JsonResultSerializer serializer(jsonObject);
+        serializer.serialize(this->results);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
     namespace _internal {
         Module::Module(const char* name, std::function<void(Module*)> function) 
             : passedTestsCount(0), moduleName(name) {
+            function(this); // pre-collect data (for ex., tests cout)
             Core::getInstance().addModule(this);
-            function(this);
         }
 
         void Module::addTest(const char* name, std::function<void()> func) {
             tests[name] = func;
         }
 
-        void Module::runTests() {
+        void Module::runTests(std::vector<Result>& resultsContainer) {
             this->passedTestsCount = 0;
             for (auto iter = this->tests.begin(); iter != this->tests.end(); ++iter) {
                 try {
                     iter->second();
-                    Format::printPassedTest(iter->first);
+
                     this->passedTestsCount++;
+
+                    if (resultsContainer.capacity() > resultsContainer.size()) {
+                        resultsContainer.push_back(Result(this->getName(), (*iter).first, true));
+                    }
+
+                    Format::printPassedTest(iter->first);
                 } catch (...) {
+                    if (resultsContainer.capacity() > resultsContainer.size()) {
+                        resultsContainer.push_back(Result(this->getName(), ( *iter ).first, false));
+                    }
+
                     Format::printFailedTest(iter->first);
                 }
             }
