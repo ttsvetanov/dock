@@ -49,9 +49,9 @@ int32_t main() {
 }
 ```
 This code puts, for example, this:
-![foreman *nix console test output](https://github.com/emdc/foreman/tree/master/doc/screenshot.png)
+![foreman *nix console test output](https://github.com/emdc/foreman/blob/master/doc/screenshot.png)
 or
-![foreman *nix console test output](https://github.com/emdc/foreman/tree/master/doc/screenshot-cmder.png)
+![foreman *nix console test output](https://github.com/emdc/foreman/blob/master/doc/screenshot-cmder.png)
 
 ## Used libraries
 * [termcolor](https://github.com/ikalnytskyi/termcolor) for colorize console output (BSD-3 license);
