@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <iostream>
+#include <iomanip>
 
 #include "./lib/termcolor.hpp"
 
@@ -16,7 +17,9 @@ namespace foreman {
         Encoding();
         ~Encoding();
     private:
+        #if defined(_WIN32) || defined(_WIN64)
         UINT previousEncoding;
+        #endif
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -28,6 +31,7 @@ namespace foreman {
         static void printPassedTest(const char* name);
         static void printFailedTest(const char* name);
         static void printAllocateError(const char* moduleName);
+        static void printStatistics(const size_t passed, const size_t allTests);
     private:
         Format() = default;
 
@@ -43,6 +47,7 @@ namespace foreman {
         static const char*  allocatorErrorMessage;
         static const char*  moduleLineSpacer;
         static const char*  testLineSpacer;
+        static const char*  statisticsPrefix;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -63,6 +68,7 @@ namespace foreman {
     const char* Format::allocatorErrorMessage = u8"Cann't allocate memory for module: ";
     const char* Format::moduleLineSpacer = u8"  ";
     const char* Format::testLineSpacer = u8"    ";
+    const char* Format::statisticsPrefix = u8"Statistics: ";
 
     // ----------------------------------------------------------------------------------------------------------------
 
@@ -112,5 +118,36 @@ namespace foreman {
             << termcolor::white << u8" " << Format::allocatorErrorMessage << Format::newLine
             << moduleName << Format::newLine
             << termcolor::reset;
+    }
+
+    void Format::printStatistics(const size_t passed, const size_t allTests) {
+        std::cout << Format::moduleLineSpacer; 
+
+        float passedPercent = ( float(passed) / float(allTests) ) * 100.0f;
+        if (passedPercent >= 80.0f) {
+            std::cout << termcolor::green;
+        } else if (passedPercent >= 30.0) {
+            std::cout << termcolor::yellow;
+        } else {
+            std::cout << termcolor::red;
+        }
+        std::cout << Format::statisticsPrefix;
+
+        std::cout << termcolor::green << passed
+            << termcolor::white << u8"/"
+            << termcolor::red << allTests - passed;
+
+        if (passedPercent >= 80.0f) {
+            std::cout << termcolor::green
+                << u8" (" << std::fixed << std::setprecision(1) << passedPercent << u8"%)\n";
+        } else if (passedPercent >= 30.0) {
+            std::cout << termcolor::yellow
+                << u8" (" << std::fixed << std::setprecision(1) << passedPercent << u8"%)\n";
+        } else {
+            std::cout << termcolor::red
+                << u8" (" << std::fixed << std::setprecision(1) << passedPercent << u8"%)\n";
+        }
+
+        std::cout << termcolor::reset;
     }
 }

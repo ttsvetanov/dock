@@ -20,11 +20,19 @@ namespace foreman {
         public:
             Module(const char* name, std::function<void(Module*)> function);
 
-            const char* getName() const { return this->moduleName; }
+            const char* getName() const 
+                { return this->moduleName; }
+
+            size_t      getPassedTestsCount() const 
+                { return this->passedTestsCount; }
+
+            size_t      getTestsCount() const 
+                { return this->tests.size(); }
 
             void        addTest(const char* name, std::function<void()> func);
             void        runTests();
         private:
+            size_t      passedTestsCount;
             const char* moduleName;
 
             std::map<const char*, std::function<void()>> tests;
@@ -47,6 +55,9 @@ namespace foreman {
         Core() = default;
 
         std::vector<_internal::Module*> modules;
+
+        size_t  passedTestsCount;
+        size_t  allTestsCount;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -72,16 +83,22 @@ namespace foreman {
     }
 
     void Core::run() {
+        this->passedTestsCount = 0;
+        this->allTestsCount = 0;
         for (auto iter = this->modules.begin(); iter != this->modules.end(); ++iter) {
             if (*iter) {
                 Format::printModuleName((*iter)->getName());
                 (*iter)->runTests();
+                this->passedTestsCount += (*iter)->getPassedTestsCount();
+                this->allTestsCount += (*iter)->getTestsCount();
             }
         }
+        Format::printStatistics(this->passedTestsCount, this->allTestsCount);
     }
 
     namespace _internal {
-        Module::Module(const char* name, std::function<void(Module*)> function) : moduleName(name) {
+        Module::Module(const char* name, std::function<void(Module*)> function) 
+            : passedTestsCount(0), moduleName(name) {
             Core::getInstance().addModule(this);
             function(this);
         }
@@ -91,10 +108,12 @@ namespace foreman {
         }
 
         void Module::runTests() {
+            this->passedTestsCount = 0;
             for (auto iter = this->tests.begin(); iter != this->tests.end(); ++iter) {
                 try {
                     iter->second();
                     Format::printPassedTest(iter->first);
+                    this->passedTestsCount++;
                 } catch (...) {
                     Format::printFailedTest(iter->first);
                 }
@@ -107,7 +126,7 @@ namespace foreman {
     #define FOREMAN_CONCAT_(x,y)        x##y
     #define FOREMAN_CONCAT(x,y)         FOREMAN_CONCAT_(x,y)
     #define GENERATE_MODULE(number)     FOREMAN_CONCAT(static foreman::_internal::Module foremanInternalModule, __COUNTER__)
-    #define Module(name, function)      GENERATE_MODULE(__COUNTER__)(name, [](foreman::_internal::Module* module) function )
+    #define Module(name, function)      GENERATE_MODULE(__COUNTER__)(name, [](foreman::_internal::Module* _foreman_module) function )
 
-    #define Test(name, function)        module->addTest(name, function)
+    #define Test(name, function)        _foreman_module->addTest(name, function)
 }

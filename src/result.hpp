@@ -21,16 +21,32 @@ namespace foreman {
         bool        isPassed;
     };
 
+    // ----------------------------------------------------------------------------------------------------------------
+
     class ResultSerializer {
     public:
         virtual void serialize(std::vector<Result>& results) = 0;
     };
 
+    // ----------------------------------------------------------------------------------------------------------------
+
     class JsonResultSerializer : public ResultSerializer {
     public:
-        virtual void serialize(std::vector<Result>& results) override;
+        JsonResultSerializer(nlohmann::json& jsonObj);
+
+        virtual void        serialize(std::vector<Result>& results) override;
+        nlohmann::json&     getSerializedJson() 
+            { return this->outJson; }
+    private:
+        nlohmann::json& outJson;
+
+        static const char* resultArrayName;
+        static const char* moduleName;
+        static const char* testName;
+        static const char* isPassedName;
     };
 
+    // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
 
     Result::Result(const char* _module, const char* _test, bool _isPassed) {
@@ -39,14 +55,24 @@ namespace foreman {
         this->isPassed = _isPassed;
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
+
+    const char* JsonResultSerializer::resultArrayName = u8"results";
+    const char* JsonResultSerializer::moduleName = u8"module";
+    const char* JsonResultSerializer::testName = u8"test";
+    const char* JsonResultSerializer::isPassedName = u8"isPassed";
+
+    JsonResultSerializer::JsonResultSerializer(nlohmann::json& jsonObj)
+        : outJson(jsonObj) 
+    {   }
+
     void JsonResultSerializer::serialize(std::vector<Result>& results) {
-        using json = nlohmann::json;
-
-        json outJson;
-
-        outJson[u8"results"] = nullptr;
-        for (auto iter = results.begin(); iter != results.end(); ++iter) {
-            
+        outJson[resultArrayName] = nullptr;
+        for (std::vector<Result>::size_type i = 0; i < results.size(); ++i) {
+            outJson[resultArrayName][i] = nullptr;
+            outJson[resultArrayName][i][moduleName] = results[i].module;
+            outJson[resultArrayName][i][testName] = results[i].test;
+            outJson[resultArrayName][i][isPassedName] = results[i].isPassed;
         }
     }
 }
