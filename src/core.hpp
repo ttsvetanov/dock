@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstddef>
 
+#include <ostream>
 #include <functional>
 #include <vector>
 #include <map>

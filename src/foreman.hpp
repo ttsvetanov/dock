@@ -32,7 +32,7 @@ SOFTWARE.
 
 #include <cstdint>
 #include <cstddef>
-#include <iostream>
+#include <ostream>
 #include <functional>
 #include <vector>
 #include <tuple>

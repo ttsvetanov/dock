@@ -6,10 +6,11 @@
 #include <vector>
 #include <functional>
 
+#include <json.hpp>
+
 #include "assert.hpp"
 #include "format.hpp"
 
-#include "lib/json.hpp"
 
 namespace foreman {
     class Result {

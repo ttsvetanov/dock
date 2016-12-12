@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "./lib/termcolor.hpp"
+#include <termcolor.hpp>
 
 namespace foreman {
     #if defined(_WIN32) || defined(_WIN64)
