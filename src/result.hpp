@@ -12,7 +12,7 @@
 #include "format.hpp"
 
 
-namespace foreman {
+namespace dock {
     class Result {
     public:
         Result(const char* module = u8"", const char* test = u8"", bool _isPassed = false);

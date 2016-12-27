@@ -8,7 +8,7 @@
 #include <functional>
 #include <exception>
 
-namespace foreman {
+namespace dock {
     // Simple assert library for unit-testing engine
     class Assert {
     public:

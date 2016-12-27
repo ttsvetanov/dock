@@ -1,9 +1,9 @@
 ﻿#include <cstdio>
 #include <cstdint>
 
-#include "foreman.hpp"
+#include "dock.hpp"
 
-using namespace foreman;
+using namespace dock;
 
 Module(u8"Some module 1", {
     Test(u8"Some test 1", []() {
@@ -27,9 +27,9 @@ Module(u8"Some module 2", {
 
 int32_t main() {
     nlohmann::json outJson;
-    outJson[u8"version"] = u8"0.2.0";
+    outJson[u8"version"] = u8"0.2.1";
     outJson[u8"date"] = __DATE__;
-    outJson[u8"app"] = u8"foreman-test";
+    outJson[u8"app"] = u8"dock-test";
 
     Core::getInstance().run();
     Core::getInstance().putResultsIntoJson(outJson);

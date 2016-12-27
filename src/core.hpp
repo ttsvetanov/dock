@@ -12,7 +12,7 @@
 #include "format.hpp"
 #include "result.hpp"
 
-namespace foreman {
+namespace dock {
     class Core;
 
     namespace _internal {
@@ -150,10 +150,10 @@ namespace foreman {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    #define FOREMAN_CONCAT_(x,y)        x##y
-    #define FOREMAN_CONCAT(x,y)         FOREMAN_CONCAT_(x,y)
-    #define GENERATE_MODULE(number)     FOREMAN_CONCAT(static foreman::_internal::Module foremanInternalModule, __COUNTER__)
-    #define Module(name, function)      GENERATE_MODULE(__COUNTER__)(name, [](foreman::_internal::Module* _foreman_module) function )
+    #define DOCK_CONCAT_(x,y)           x##y
+    #define DOCK_CONCAT(x,y)            DOCK_CONCAT_(x,y)
+    #define GENERATE_MODULE(number)     DOCK_CONCAT(static dock::_internal::Module dockInternalModule, __COUNTER__)
+    #define Module(name, function)      GENERATE_MODULE(__COUNTER__)(name, [](dock::_internal::Module* _dock_module) function )
 
-    #define Test(name, function)        _foreman_module->addTest(name, function)
+    #define Test(name, function)        _dock_module->addTest(name, function)
 }

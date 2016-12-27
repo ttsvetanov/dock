@@ -42,4 +42,4 @@ SOFTWARE.
 #include "result.hpp"
 #include "core.hpp"
 
-namespace foreman {}
+namespace dock {}
