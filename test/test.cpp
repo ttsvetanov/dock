@@ -1,7 +1,8 @@
 ﻿#include <cstdio>
 #include <cstdint>
 
-#include "dock.hpp"
+#include <dock.hpp>
+#include <serializers/json_serializer.hpp>
 
 using namespace dock;
 
@@ -27,15 +28,20 @@ Module(u8"Some module 2", {
 
 int32_t main() {
     nlohmann::json outJson;
-    outJson[u8"version"] = u8"0.2.1";
+    JsonSerializer serializer(outJson, 4);
+
+    outJson[u8"version"] = u8"0.3.0";
     outJson[u8"date"] = __DATE__;
     outJson[u8"app"] = u8"dock-test";
 
-    Core::getInstance().run();
-    Core::getInstance().putResultsIntoJson(outJson);
+    core().run();
+    core().collect(serializer);
 
-    std::cout << std::endl;
-    std::cout << outJson.dump(2);
+    outJson[u8"passed_count"] = core().getPassedCount();
+    outJson[u8"tests_count"] = core().getTestsCount();
+    outJson[u8"modules_count"] = core().getModulesCount();
+
+    std::cout << serializer << std::endl;
 
     return 0;
 }

@@ -4,12 +4,12 @@
 #include <cstddef>
 
 #include <ostream>
+#include <iostream>
 #include <functional>
 #include <vector>
 #include <map>
 
 #include "assert.hpp"
-#include "format.hpp"
 #include "result.hpp"
 
 namespace dock {
@@ -23,7 +23,7 @@ namespace dock {
             const char* getName() const 
                 { return this->moduleName; }
 
-            size_t      getPassedTestsCount() const 
+            size_t      getPassedCount() const 
                 { return this->passedTestsCount; }
 
             size_t      getTestsCount() const 
@@ -41,19 +41,19 @@ namespace dock {
 
     class Core {
     public:
-        static constexpr Core& getInstance() {
-            return Core::instance;
-        }
-
         void addModule(_internal::Module* module);
 
         void run();
-        void putResultsIntoJson(nlohmann::json& jsonObject);
-    private:
-        static const size_t resizeStep = 100;
-        static Core instance;
+        void collect(ResultSerializer& serializer);
 
+        size_t getPassedCount() const { return this->passedTestsCount; }
+        size_t getTestsCount() const { return this->allTestsCount; }
+        size_t getModulesCount() const { return this->modules.size(); }
+    private:
         Core();
+        friend Core& core();
+
+        static const size_t resizeStep = 100;
 
         std::vector<_internal::Module*> modules;
         std::vector<Result> results;
@@ -64,9 +64,10 @@ namespace dock {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    Core Core::instance;
-
-    // ----------------------------------------------------------------------------------------------------------------
+    Core& core() {
+        static Core instance;
+        return instance;
+    }
 
     Core::Core()
         : passedTestsCount(0), allTestsCount(0) { }
@@ -83,7 +84,7 @@ namespace dock {
             this->modules.push_back(module);
             this->allTestsCount += module->getTestsCount();
         } catch (...) {
-            Format::printAllocateError(module->getName());
+            std::cout << "Can't allocate memory, line: " << __LINE__ << ", file: " << __FILE__ << std::endl; 
             return;
         }
     }
@@ -96,19 +97,14 @@ namespace dock {
 
         for (auto iter = this->modules.begin(); iter != this->modules.end(); ++iter) {
             if (*iter) {
-                Format::printModuleName((*iter)->getName());
                 (*iter)->runTests(this->results);
-                this->passedTestsCount += (*iter)->getPassedTestsCount();
+                this->passedTestsCount += (*iter)->getPassedCount();
             }
         }
-        Format::printStatistics(this->passedTestsCount, this->allTestsCount);
     }
 
-    void Core::putResultsIntoJson(nlohmann::json& jsonObject) {
-        JsonResultSerializer serializer(jsonObject);
+    void Core::collect(ResultSerializer& serializer) {
         serializer.serialize(this->results);
-        jsonObject[u8"testsPassed"] = this->passedTestsCount;
-        jsonObject[u8"testsCount"] = this->allTestsCount;
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -117,7 +113,7 @@ namespace dock {
         Module::Module(const char* name, std::function<void(Module*)> function) 
             : passedTestsCount(0), moduleName(name) {
             function(this); // pre-collect data (for ex., tests cout)
-            Core::getInstance().addModule(this);
+            core().addModule(this);
         }
 
         void Module::addTest(const char* name, std::function<void()> func) {
@@ -135,14 +131,10 @@ namespace dock {
                     if (resultsContainer.capacity() > resultsContainer.size()) {
                         resultsContainer.push_back(Result(this->getName(), (*iter).first, true));
                     }
-
-                    Format::printPassedTest(iter->first);
                 } catch (...) {
                     if (resultsContainer.capacity() > resultsContainer.size()) {
                         resultsContainer.push_back(Result(this->getName(), ( *iter ).first, false));
                     }
-
-                    Format::printFailedTest(iter->first);
                 }
             }
         }
