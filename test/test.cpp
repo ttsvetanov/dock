@@ -8,7 +8,7 @@
 
 using namespace dock;
 
-Module(u8"Some module 1", {
+Module(u8"Some module 1", [](DOCK_MODULE()) {
     Test(u8"Some test 1", []() {
         Assert::isTrue([]() -> bool { return true; });
     });
@@ -18,7 +18,7 @@ Module(u8"Some module 1", {
     });
 });
 
-Module(u8"Some module 2", {
+Module(u8"Some module 2", [](DOCK_MODULE()) {
     Test(u8"Some test 1", []() {
         Assert::isTrue([]() -> bool { return true; });
     });
@@ -35,7 +35,7 @@ int32_t main() {
     TextSerializer      textSerializer;
     ConsoleSerializer   consoleSerializer;
 
-    outJson[u8"version"] = u8"0.3.0";
+    outJson[u8"version"] = u8"0.4.0";
     outJson[u8"date"] = __DATE__;
     outJson[u8"app"] = u8"dock-test";
 
