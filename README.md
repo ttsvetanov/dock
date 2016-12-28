@@ -1,4 +1,4 @@
-# foreman
+# dock
 
 ## Description
 
@@ -11,16 +11,17 @@ Flag `-static` help for assembly in Windows (no dependencis for .dll).
 
 ## Using
 
-Add `#include <foreman.hpp>` to code file and add to project include directories path to headers. You may use many `Module()` in your code, in different headers. Library is cross-platform, but if you take some error, please send message or open issue.
+Add `#include <dock.hpp>` to code file and add to project include directories path to headers. You may use many `Module()` in your code, in different headers. Library is cross-platform, but if you take some error, please send message or open issue.
 For example (`test/test.cpp` in this repo):
 
 ```cpp
 #include <cstdio>
 #include <cstdint>
 
-#include "foreman.hpp"
+#include "dock.hpp"
+#include "serializers/json_serializer.hpp"
 
-using namespace foreman;
+using namespace dock;
 
 Module(u8"Some module 1", {
     Test(u8"Some test 1", []() {
@@ -43,7 +44,13 @@ Module(u8"Some module 2", {
 });
 
 int32_t main() {
-    Core::getInstance().run();
+    nlohmann::json outJson;
+    JsonSerializer serializer(outJson, 4);
+
+    core().run();
+    core().collect(serializer);
+
+    std::cout << serializer << std::endl;
 
     return 0;
 }

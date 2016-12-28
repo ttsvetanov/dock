@@ -11,8 +11,8 @@ namespace dock {
     public:
         JsonSerializer(nlohmann::json& jsonObj, int indent = -1);
 
-        virtual void            serialize(std::vector<Result>& results) override;
-        virtual const char*     toCharArray() const override;
+        virtual void        serialize(std::vector<Result>& results) override;
+        virtual std::string toString() const override;
     private:
         nlohmann::json& outJson;
         int indent;
@@ -45,7 +45,7 @@ namespace dock {
         }
     }
 
-    const char* JsonSerializer::toCharArray() const {
-        return this->outJson.dump(this->indent).c_str();
+    std::string JsonSerializer::toString() const {
+        return this->outJson.dump(this->indent);
     }
 }

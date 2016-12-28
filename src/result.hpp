@@ -24,7 +24,7 @@ namespace dock {
     class ResultSerializer {
     public:
         virtual void            serialize(std::vector<Result>& results) = 0;
-        virtual const char*     toCharArray() const = 0;
+        virtual std::string     toString() const = 0;
         friend std::ostream&    operator<<(std::ostream& os, ResultSerializer& s);
     };
 
@@ -38,7 +38,7 @@ namespace dock {
     }
 
     std::ostream& operator<<(std::ostream& os, ResultSerializer& s) {
-        os << s.toCharArray();
+        os << s.toString();
         return os;
     }
 }
