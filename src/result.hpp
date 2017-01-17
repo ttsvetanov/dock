@@ -23,6 +23,8 @@ namespace dock {
 
     class ResultSerializer {
     public:
+        virtual ~ResultSerializer() = default;
+        
         virtual void            serialize(std::vector<Result>& results) = 0;
         virtual std::string     toString() const = 0;
         friend std::ostream&    operator<<(std::ostream& os, ResultSerializer& s);
