@@ -22,8 +22,7 @@ namespace dock {
             }
         };
 
-        // API
-        static void isTrue(std::function<bool()> fcn);
+        static void isTrue(const bool value);
 
         template<typename T>
         static void isEquals(const T a, const T b, std::function<bool(const T, const T)> compareFcn = defaultEqualsFunction<T>);
@@ -68,8 +67,8 @@ namespace dock {
 
     // -------------------------------------------------------------------------------------------------------------------
 
-    void Assert::isTrue(std::function<bool()> fcn) {
-        if (!fcn()) {
+    inline void Assert::isTrue(const bool value) {
+        if (!value) {
             throw Assert::Exception();
         }
     }

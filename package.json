@@ -1,0 +1,8 @@
+{
+    "version": "0.4.1-dev",
+    "name": "dock",
+    "dependencies": [
+        "https://nlohmann.github.io/json/",
+        "https://github.com/ikalnytskyi/termcolor"
+    ],
+}

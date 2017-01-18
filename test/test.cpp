@@ -10,21 +10,21 @@ using namespace dock;
 
 Module(u8"Some module 1", [](DOCK_MODULE()) {
     Test(u8"Some test 1", []() {
-        Assert::isTrue([]() -> bool { return true; });
+        Assert::isTrue(false);
     });
 
     Test(u8"Some test 2", []() {
-        Assert::isTrue([]() -> bool { return true; });
+        Assert::isTrue(true);
     });
 });
 
 Module(u8"Some module 2", [](DOCK_MODULE()) {
     Test(u8"Some test 1", []() {
-        Assert::isTrue([]() -> bool { return true; });
+        Assert::isTrue(true);
     });
 
     Test(u8"Some test 2", []() {
-        Assert::isTrue([]() -> bool { return false; });
+        Assert::isTrue(false);
     });
 });
 
