@@ -25,7 +25,7 @@ namespace dock {
         static void isTrue(const bool value);
 
         template<typename T>
-        static void isEquals(const T a, const T b, std::function<bool(const T, const T)> compareFcn = defaultEqualsFunction<T>);
+        static void isEqual(const T a, const T b, std::function<bool(const T, const T)> compareFcn = defaultEqualsFunction<T>);
 
         template<typename T>
         static void isGreater(const T a, const T b, std::function<bool(const T, const T)> compareFcn = defaultGreaterFunction<T>);
@@ -74,12 +74,12 @@ namespace dock {
     }
 
     template<typename T>
-    void Assert::isEquals(const T a, const T b, std::function<bool(const T, const T)> compareFcn) {
+    void Assert::isEqual(const T a, const T b, std::function<bool(const T, const T)> compareFcn) {
         Assert::generalAssertMethod(a, b, compareFcn);
     }
 
     template<>
-    void Assert::isEquals<const char*>(const char* const a, const char* const b, 
+    void Assert::isEqual<const char*>(const char* const a, const char* const b, 
                                     std::function<bool(const char* const, const char* const)> compareFcn) {
         if (compareFcn) {
             if (!compareFcn(a, b)) {

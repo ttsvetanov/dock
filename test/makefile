@@ -1,5 +1,5 @@
 CC 			= g++
-CCFLAGS 	= -static -std=c++1z
+CCFLAGS 	= -static -std=c++1z -Wall -Wextra -Werror -pedantic
 INCLUDE		= -I"../src" -I"../lib"
 TARGET		= test.exe
 OPTIMIZE	= -O0

@@ -10,11 +10,15 @@ using namespace dock;
 
 Module(u8"Some module 1", [](DOCK_MODULE()) {
     Test(u8"Some test 1", []() {
-        Assert::isTrue(false);
+        uint8_t value = 0x10;
+        uint8_t expectedValue = 0x10;
+        Assert::isEqual(value, expectedValue);
     });
 
     Test(u8"Some test 2", []() {
-        Assert::isTrue(true);
+        uint8_t value = 0x10;
+        uint8_t expectedBorder = 0x20;
+        Assert::isLess(value, expectedBorder);
     });
 });
 

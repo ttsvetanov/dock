@@ -1,5 +1,5 @@
 {
-    "version": "0.4.1-dev",
+    "version": "0.4.2-dev",
     "name": "dock",
     "dependencies": [
         "https://nlohmann.github.io/json/",
