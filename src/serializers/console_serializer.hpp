@@ -39,7 +39,7 @@ namespace dock {
         static const char*  passedSymbol;
         static const char*  failedSymbol;
         static const char*  failedWord;
-        static const char*  errorWord;
+        //static const char*  errorWord;
         static const char*  moduleLineSpacer;
         static const char*  testLineSpacer;
     };
@@ -65,11 +65,11 @@ namespace dock {
     // ----------------------------------------------------------------------------------------------------------------
 
     const char* ConsoleSerializer::newLine = u8"\n";
-    const char* ConsoleSerializer::passedWord = u8"passed!";
+    const char* ConsoleSerializer::passedWord = u8"passed";
     const char* ConsoleSerializer::passedSymbol = u8"\u2713";
     const char* ConsoleSerializer::failedSymbol = u8"x";
-    const char* ConsoleSerializer::failedWord = u8"failed!";
-    const char* ConsoleSerializer::errorWord = u8"Error!";
+    const char* ConsoleSerializer::failedWord = u8"failed";
+    //const char* ConsoleSerializer::errorWord = u8"Error!";
     const char* ConsoleSerializer::moduleLineSpacer = u8"  ";
     const char* ConsoleSerializer::testLineSpacer = u8"    ";
 
@@ -88,18 +88,19 @@ namespace dock {
             for(std::vector<Result>::size_type i = 0; i < res.size(); ++i) {
                 if(lastModuleStringPtr != res[i].module) {
                     lastModuleStringPtr = res[i].module;
-                    os << ConsoleSerializer::moduleLineSpacer << res[i].module << ConsoleSerializer::newLine;
+                    os << termcolor::yellow << ConsoleSerializer::moduleLineSpacer << res[i].module << ConsoleSerializer::newLine
+                        << termcolor::reset;
                 }
 
                 if(res[i].isPassed) {
                     os << termcolor::green << ConsoleSerializer::testLineSpacer << ConsoleSerializer::passedSymbol
-                        << termcolor::white << " " << res[i].test << ": "
-                        << termcolor::green << ConsoleSerializer::passedWord << ConsoleSerializer::newLine
-                        << termcolor::white;
+                        << termcolor::green << " [ " << ConsoleSerializer::passedWord << " ]: "
+                        << termcolor::white << res[i].test << ConsoleSerializer::newLine
+                        << termcolor::reset;
                 } else {
                     os << termcolor::red << ConsoleSerializer::testLineSpacer << ConsoleSerializer::failedSymbol
-                        << termcolor::white << " " << res[i].test << ": "
-                        << termcolor::red << ConsoleSerializer::failedWord << ConsoleSerializer::newLine
+                        << termcolor::red << " [ "  << ConsoleSerializer::failedWord << " ]: " 
+                        << termcolor::white << res[i].test << ConsoleSerializer::newLine
                         << termcolor::reset;
                 }
             }

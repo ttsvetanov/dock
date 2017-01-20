@@ -6,6 +6,7 @@
 #include <ostream>
 #include <iostream>
 #include <functional>
+#include <utility>
 #include <vector>
 #include <map>
 
@@ -124,16 +125,18 @@ namespace dock {
             this->passedTestsCount = 0;
             for (auto iter = this->tests.begin(); iter != this->tests.end(); ++iter) {
                 try {
-                    iter->second();
+                    if(iter->second) {
+                        iter->second();
+                    }
 
                     this->passedTestsCount++;
 
                     if (resultsContainer.capacity() > resultsContainer.size()) {
-                        resultsContainer.push_back(Result(this->getName(), (*iter).first, true));
+                        resultsContainer.push_back(Result(this->getName(), iter->first, true));
                     }
                 } catch (...) {
                     if (resultsContainer.capacity() > resultsContainer.size()) {
-                        resultsContainer.push_back(Result(this->getName(), ( *iter ).first, false));
+                        resultsContainer.push_back(Result(this->getName(), iter->first, false));
                     }
                 }
             }
@@ -148,5 +151,5 @@ namespace dock {
     #define DOCK_MODULE()               dock::_internal::Module* _dock_module
     #define Module(name, function)      GENERATE_MODULE(__COUNTER__)(name, function )
 
-    #define Test(name, function)        _dock_module->addTest(name, function)
+    #define Test(name, function)        _dock_module->addTest(name, std::move(function))
 }
